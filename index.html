@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Date Countdown</title>
+    <style>
+        body {
+            font-family: monospace;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222222;
+            color: #c7c7c7;
+        }
+
+        #countdown {
+            font-size: calc(100vh / 5);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Countdown to Date & Time</h1>
+    <input type="datetime-local" id="datetimeInput" />
+    <button onclick="startCountdown()">Start</button>
+    <div id="countdown">--:--:--:--</div>
+
+    <script>
+        let countdownInterval;
+
+        function startCountdown() {
+            clearInterval(countdownInterval);
+            const input = document.getElementById('datetimeInput').value;
+            const targetDate = new Date(input);
+
+            if (isNaN(targetDate.getTime())) {
+                alert('Please select a valid date and time.');
+                return;
+            }
+
+            document.body.innerHTML = '<div id="countdown">--:--:--:--</div>';
+
+            countdownInterval = setInterval(() => {
+                const now = new Date();
+                const diff = targetDate - now;
+
+                if (diff <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').textContent = "Time's up!";
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                document.getElementById('countdown').textContent =
+                    `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+            }, 1000);
+        }
+
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+    </script>
+</body>
+
+</html>
