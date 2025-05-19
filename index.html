@@ -28,13 +28,17 @@
 
 <body>
     <div id="countdown">00d 00h 00m 00s</div>
+    <div id="footer" style="display:none; margin-top:2em; font-size:1.2em;"></div>
 
     <script>
-        const normalMessage = 'Jasper uit dienst? Wanneer?'
+        const normalMessage = 'Jasper uit dienst? Wanneer?';
         const endDate = new Date(2025, 4, 27, 16, 0, 0, 0);
         const endDateMessage = 'Jasper is uit dienst!';
-
-
+        const footerLink = {
+            url: 'https://vliegen.cer.sh/',
+            text: 'Wanneer gaat Jasper Vliegen? https://vliegen.cer.sh/',
+            color: '#c7c7c7'
+        };
         let countdownInterval;
         let wakeLock = null;
         let silentVideo = null;
@@ -80,13 +84,14 @@
 
         async function startCountdown() {
             clearInterval(countdownInterval);
-
-            document.body.innerHTML = '<div id="countdown">00d 00h 00m 00s</div>';
+            document.getElementById('countdown').textContent = '00d 00h 00m 00s';
+            document.getElementById('footer').style.display = 'none';
+            document.getElementById('footer').innerHTML = '';
             document.title = normalMessage;
             await requestWakeLock();
 
             countdownInterval = setInterval(() => {
-                const now = new Date()
+                const now = new Date();
                 const diff = endDate - now;
 
                 if (diff <= 0) {
@@ -95,6 +100,10 @@
                     document.title = endDateMessage;
                     releaseWakeLock();
                     launchConfetti();
+
+                    const footer = document.getElementById('footer');
+                    footer.innerHTML = `<a href="${footerLink.url}" target="_blank" style="color:${footerLink.color}; text-decoration:none;">${footerLink.text}</a>`;
+                    footer.style.display = '';
                     return;
                 }
 
