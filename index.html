@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Date Countdown</title>
+    <title>Timer</title>
     <style>
         body {
             font-family: monospace;
@@ -27,12 +27,14 @@
 </head>
 
 <body>
-    <h1>Countdown to Date & Time</h1>
-    <input type="datetime-local" id="datetimeInput" />
-    <button onclick="startCountdown()">Start</button>
     <div id="countdown">--d --h--m --s</div>
 
     <script>
+        const normalMessage = 'Jasper uit dienst? Wanneer?'
+        const endDate = new Date(2025, 4, 27, 16, 0, 0, 0);
+        const endDateMessage = 'Jasper is uit dienst!';
+
+
         let countdownInterval;
         let wakeLock = null;
         let silentVideo = null;
@@ -78,24 +80,19 @@
 
         async function startCountdown() {
             clearInterval(countdownInterval);
-            const input = document.getElementById('datetimeInput').value;
-            const targetDate = new Date(input);
-
-            if (isNaN(targetDate.getTime())) {
-                alert('Please select a valid date and time.');
-                return;
-            }
 
             document.body.innerHTML = '<div id="countdown">--d --h--m --s</div>';
+            document.title = normalMessage;
             await requestWakeLock();
 
             countdownInterval = setInterval(() => {
                 const now = new Date()
-                const diff = targetDate - now;
+                const diff = endDate - now;
 
                 if (diff <= 0) {
                     clearInterval(countdownInterval);
-                    document.getElementById('countdown').textContent = "Time's up!";
+                    document.getElementById('countdown').textContent = endDateMessage;
+                    document.title = endDateMessage;
                     releaseWakeLock();
                     launchConfetti();
                     return;
@@ -184,6 +181,8 @@
             }
             drawConfetti();
         }
+
+        startCountdown();
     </script>
 </body>
 
