@@ -35,19 +35,42 @@
     <script>
         let countdownInterval;
         let wakeLock = null;
+        let silentVideo = null;
+
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
 
         async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
+            if (isIOS()) {
+                if (!silentVideo) {
+                    silentVideo = document.createElement('video');
+                    silentVideo.src =
+                        'data:video/mp4;base64,AAAAHGZ0eXBNNAACAAAAAG1wNDFtcDQxaXNvbTQyAAACAGlzb21pc28ybXA0MQAAADxtZGF0AAAAAAABAAEAAAAwAAAAAAABAAEAAAAAAAAAAAAA'; // 1px silent mp4
+                    silentVideo.loop = true;
+                    silentVideo.muted = true;
+                    silentVideo.playsInline = true;
+                    silentVideo.style.display = 'none';
+                    document.body.appendChild(silentVideo);
+                    silentVideo.play();
                 }
-            } catch (err) {
-                console.error('Wake Lock error:', err);
+            } else if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                } catch (err) {
+                    console.error('Wake Lock error:', err);
+                }
             }
         }
 
         function releaseWakeLock() {
-            if (wakeLock) {
+            if (isIOS()) {
+                if (silentVideo) {
+                    silentVideo.pause();
+                    silentVideo.remove();
+                    silentVideo = null;
+                }
+            } else if (wakeLock) {
                 wakeLock.release();
                 wakeLock = null;
             }
