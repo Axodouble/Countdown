@@ -90,13 +90,14 @@
             await requestWakeLock();
 
             countdownInterval = setInterval(() => {
-                const now = new Date();
+                const now = new Date()
                 const diff = targetDate - now;
 
                 if (diff <= 0) {
                     clearInterval(countdownInterval);
                     document.getElementById('countdown').textContent = "Time's up!";
                     releaseWakeLock();
+                    launchConfetti();
                     return;
                 }
 
@@ -112,6 +113,76 @@
 
         function pad(num) {
             return num.toString().padStart(2, '0');
+        }
+
+        function launchConfetti() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = 0;
+            canvas.style.left = 0;
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = 9999;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            const confettiCount = 150;
+            let confetti = [];
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#3f51b5', '#2196f3', '#009688', '#4caf50', '#ffeb3b', '#ff9800', '#795548'];
+            function createConfetto() {
+                return {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * -canvas.height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * confettiCount,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 10,
+                    tiltAngleIncremental: (Math.random() * 0.07) + .05,
+                    tiltAngle: 0
+                };
+            }
+            for (let i = 0; i < confettiCount; i++) {
+                confetti.push(createConfetto());
+            }
+            let angle = 0;
+            let tiltAngle = 0;
+            let running = true;
+            function drawConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < confetti.length; i++) {
+                    let c = confetti[i];
+                    ctx.beginPath();
+                    ctx.lineWidth = c.r;
+                    ctx.strokeStyle = c.color;
+                    ctx.moveTo(c.x + c.tilt + (c.r / 3), c.y);
+                    ctx.lineTo(c.x + c.tilt, c.y + c.tilt + (c.r / 5));
+                    ctx.stroke();
+                }
+                updateConfetti();
+                if (running) {
+                    requestAnimationFrame(drawConfetti);
+                } else {
+                    canvas.remove();
+                }
+            }
+            function updateConfetti() {
+                angle += 0.01;
+                tiltAngle += 0.1;
+                confetti = confetti.filter(c => c.y <= canvas.height);
+                for (let i = 0; i < confetti.length; i++) {
+                    let c = confetti[i];
+                    c.y += (Math.cos(angle + c.d) + 3 + c.r / 2) / 2;
+                    c.x += Math.sin(angle);
+                    c.tiltAngle += c.tiltAngleIncremental;
+                    c.tilt = Math.sin(c.tiltAngle) * 15;
+                }
+                while (confetti.length < confettiCount) {
+                    confetti.push(createConfetto());
+                }
+            }
+            drawConfetti();
         }
     </script>
 </body>
