@@ -27,7 +27,7 @@
 </head>
 
 <body>
-    <div id="countdown">--d --h--m --s</div>
+    <div id="countdown">--d --h --m --s</div>
 
     <script>
         const normalMessage = 'Jasper uit dienst? Wanneer?'
@@ -81,7 +81,7 @@
         async function startCountdown() {
             clearInterval(countdownInterval);
 
-            document.body.innerHTML = '<div id="countdown">--d --h--m --s</div>';
+            document.body.innerHTML = '<div id="countdown">--d --h --m --s</div>';
             document.title = normalMessage;
             await requestWakeLock();
 
