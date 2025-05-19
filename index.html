@@ -34,8 +34,26 @@
 
     <script>
         let countdownInterval;
+        let wakeLock = null;
 
-        function startCountdown() {
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.error('Wake Lock error:', err);
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release();
+                wakeLock = null;
+            }
+        }
+
+        async function startCountdown() {
             clearInterval(countdownInterval);
             const input = document.getElementById('datetimeInput').value;
             const targetDate = new Date(input);
@@ -45,7 +63,8 @@
                 return;
             }
 
-            document.body.innerHTML = '<div id="countdown">--:--:--:--</div>';
+            document.body.innerHTML = '<div id="countdown">--d --h--m --s</div>';
+            await requestWakeLock();
 
             countdownInterval = setInterval(() => {
                 const now = new Date();
@@ -54,6 +73,7 @@
                 if (diff <= 0) {
                     clearInterval(countdownInterval);
                     document.getElementById('countdown').textContent = "Time's up!";
+                    releaseWakeLock();
                     return;
                 }
 
