@@ -99,6 +99,7 @@
                     document.getElementById('countdown').textContent = endDateMessage;
                     document.title = endDateMessage;
                     releaseWakeLock();
+                    playYaymp3();
                     launchConfetti();
 
                     const footer = document.getElementById('footer');
@@ -189,6 +190,13 @@
                 }
             }
             drawConfetti();
+        }
+
+        function playYaymp3() {
+            const yaymp3 = new Audio('yay.mp3');
+            yaymp3.play().catch(err => {
+                console.error('Audio play error:', err);
+            });
         }
 
         startCountdown();
