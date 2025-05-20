@@ -20,6 +20,10 @@
             color: #c7c7c7;
         }
 
+        .clickable {
+            cursor: pointer;
+        }
+
         #countdown {
             font-size: calc(100vh / 5);
         }
@@ -27,10 +31,15 @@
 </head>
 
 <body>
-    <div id="countdown">00d 00h 00m 00s</div>
+    <div id="countdown" onclick="randomizeColor()" class="clickable">00d 00h 00m 00s</div>
     <div id="footer" style="display:none; margin-top:2em; font-size:1.2em;"></div>
 
     <script>
+        function randomizeColor() {
+            const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+            document.body.style.backgroundColor = `#${randomColor}`;
+        }
+
         const normalMessage = 'Jasper gaat vliegen? Wanneer?';
         const endDate = new Date(2025, 5, 6, 12, 0, 0, 0);
         const endDateMessage = 'Jasper is gaan vliegen!';
